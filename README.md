@@ -1,13 +1,11 @@
-## Estrutura do Projeto
+# Estrutura do Projeto
 
 A estrutura de pastas e arquivos do repositório é a seguinte:
 
 ```plaintext
 deploy-backstage-docker
-├── backstage                 # Contém o projeto Backstage 
-
-gerado                    # Pasta para armazenar screenshot
-
+├── backstage                 # Contém o projeto Backstage gerado
+├── gerado                    # Pasta para armazenar screenshots
 ├── README.md                 # Documentação principal do projeto
 ├── app-config.production.yaml # Configuração de produção do Backstage
 └── docker-compose.yml        # Arquivo para orquestrar os contêineres
@@ -22,9 +20,7 @@ gerado                    # Pasta para armazenar screenshot
 
 ### 1. Criação do App Backstage
 
-Para criar o projeto Backstage, execute o comando:
-
-![alt text](image.png)
+Para criar o projeto Backstage, execute o seguinte comando:
 
 ```bash
 npx @backstage/create-app@latest
@@ -41,21 +37,20 @@ Antes de iniciar a configuração Docker, execute o Backstage localmente para ga
 yarn install
 yarn dev
 ```
-
 ![alt text](image-3.png)
 
 ![alt text](image-4.png)
 
 ![alt text](image-5.png)
 
-
-#### Capturas de Tela
+Após executar esses comandos, abra seu navegador e acesse `http://localhost:7007` para verificar se a aplicação está funcionando.
 
 - **Interface web do Backstage**:  
 
 ![alt text](image-6.png)
 
 ![alt text](image-7.png)
+
 
 ### 3. Configuração e Construção para Docker
 
@@ -67,25 +62,74 @@ Para preparar o Backstage para execução no Docker:
    yarn tsc
    yarn build:backend --config app-config.yaml --config app-config.production.yaml
    ```
-   ![alt text](image-8.png)
-
-   ![alt text](image-9.png)
-
+   Esses comandos instalam as dependências necessárias, compilam o código TypeScript e constroem o backend.
 
 2. Crie o arquivo `docker-compose.yml` com a seguinte configuração:
 
    ```yaml
-   backstage:
-  build: .
-  ports:
-    - "7007:7007"
-  environment:
-    POSTGRES_HOST: db                  
-    POSTGRES_USER: your_username         
-    POSTGRES_PASSWORD: 12345
-    POSTGRES_DB: your_database          
-  depends_on:
-    - db
+   version: '3.8'
 
+   services:
+     backstage:
+       build: .
+       ports:
+         - "7007:7007"
+       environment:
+         POSTGRES_HOST: db                   # Endereço do banco de dados
+         POSTGRES_USER: your_username         # Nome de usuário do banco de dados
+         POSTGRES_PASSWORD: 12345             # Senha do banco de dados
+         POSTGRES_DB: your_database           # Nome do banco de dados
+       depends_on:
+         - db
+
+     db:
+       image: postgres:latest                 # Imagem do PostgreSQL
+       environment:
+         POSTGRES_USER: your_username          # Nome de usuário do banco de dados
+         POSTGRES_PASSWORD: 12345              # Senha do banco de dados
+         POSTGRES_DB: your_database            # Nome do banco de dados
+       ports:
+         - "5432:5432"                         # Porta do banco de dados
    ```
 
+3. Configure o arquivo `app-config.production.yaml` com as informações de conexão do banco de dados:
+
+   ```yaml
+   backend:
+     database:
+       client: pg
+       connection:
+         host: ${POSTGRES_HOST}
+         port: 5432
+         user: ${POSTGRES_USER}
+         password: ${POSTGRES_PASSWORD}  # Adicione esta linha para especificar a senha
+         database: ${POSTGRES_DB}
+   ```
+
+### Solução de Problemas
+
+- **Erro ao conectar ao banco de dados**: Verifique se o container do PostgreSQL está rodando corretamente.
+- **Erro de versão do Node.js**: Certifique-se de que está usando a versão correta do Node.js.
+
+### Teste da Aplicação
+
+Após a configuração do Docker, você pode iniciar os serviços com o seguinte comando:
+
+```bash
+docker-compose up
+```
+
+Acesse `http://localhost:7007` para verificar se a aplicação está funcionando corretamente.
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir um pull request ou relatar problemas.
+
+## Referências
+
+- [Documentação do Backstage](https://backstage.io/docs)
+- [Documentação do Docker](https://docs.docker.com/)
