@@ -121,13 +121,6 @@ docker-compose up
 
 Acesse `http://localhost:7007` para verificar se a aplicação está funcionando corretamente.
 
-## Licença
-
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
-## Contribuição
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir um pull request ou relatar problemas.
 
 ## Referências
 
